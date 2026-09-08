@@ -714,6 +714,11 @@
 <script>
   (function(){
     // ============================================================
+    // BACKEND API MANZILI
+    // ============================================================
+    const API_BASE_URL = 'https://crm-production-07dd.up.railway.app';
+
+    // ============================================================
     // SHA-256 HASH
     // ============================================================
     async function sha256(message) {
@@ -814,13 +819,13 @@
         ...(options.headers || {})
       };
 
-      let response = await fetch(url, { ...options, headers });
+      let response = await fetch(API_BASE_URL + url, { ...options, headers });
 
       if (response.status === 401) {
         const refreshToken = localStorage.getItem('educrm_refresh_token');
         if (refreshToken) {
           try {
-            const refreshResponse = await fetch('/api/token/refresh/', {
+              const refreshResponse = await fetch(API_BASE_URL + '/api/token/refresh/', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ refresh: refreshToken })
@@ -830,7 +835,7 @@
               const data = await refreshResponse.json();
               localStorage.setItem('educrm_access_token', data.access);
               headers['Authorization'] = 'Bearer ' + data.access;
-              response = await fetch(url, { ...options, headers });
+              response = await fetch(API_BASE_URL + url, { ...options, headers });
             } else {
               localStorage.removeItem('educrm_access_token');
               localStorage.removeItem('educrm_refresh_token');
